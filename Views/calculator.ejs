@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="css/nav.css">
+    <link rel="stylesheet" href="css/footer.css">
+    <link rel="stylesheet" href="css/calculator.css">
+</head>
+<body>
+    <%- include("partials/nav.ejs") -%>
+
+    <div class="outer-container">
+        <div class="screen">
+            <div class="output-screen"></div>
+            0
+        </div>
+        <div class="calculator">
+            <div id="0" value="0">0</div>
+            <div id="1">1</div>
+            <div id="2">2</div>
+            <div id="3">3</div>
+            <div id="4">4</div>
+            <div id="5">5</div>
+            <div id="6">6</div>
+            <div id="7">7</div>
+            <div id="8">8</div>
+            <div id="9">9</div>
+            <div id="dot">.</div>
+            <div id="add">+</div>
+            <div id="sub">-</div>
+            <div id="mul">*</div>
+            <div id="divd">/</div>
+            <div id="equal">=</div>
+            <div id="back">C</div>
+            <div id="clear">AC</div>
+        </div>
+    </div>
+
+    <%- include("partials/footer.ejs") -%>
+
+    <script>
+        const calculator = document.querySelector(".calculator");
+        const screen = document.querySelector(".screen");
+        let storingInputs = [];
+
+
+        calculator.addEventListener("click", (event) => {
+            const value = event.target.textContent;
+            // if nothing is selected then return back from the function.
+            if(storingInputs.length === 0 && (value == "-" || value == "+" || value =="*" || value == "/" || value == "%" || value == "=") )
+                return;
+
+            if(event.target.id !== "equal" && event.target.id !== "clear" && event.target.id !== "back") {
+                storingInputs.push(value);
+
+            if(storingInputs[0] == "0") storingInputs[0] = null;
+            
+            if( (storingInputs[0] == ".") && (storingInputs[1] == "." || storingInputs[1] == "-" || storingInputs[1] == "+" || storingInputs[1] == "*" || storingInputs[1] == "/" || storingInputs[1] == "=" ))
+                return storingInputs.splice(1, 1);
+            
+            console.log(storingInputs);
+            screen.textContent = storingInputs.join("");
+            }
+
+
+            if(event.target.id === "clear") {
+                screen.textContent = "";
+                storingInputs = [];
+            }
+
+
+            if(event.target.id === "back") {
+                const newStoringInput = [...storingInputs];
+                const updatedInputs = newStoringInput.slice(0, storingInputs.length - 1);
+                storingInputs = updatedInputs;
+                screen.textContent = storingInputs.join("");
+                // console.log(storingInputs);
+            }
+            
+
+            if(event.target.id === "equal") {
+                const expression = storingInputs.join("");
+             
+                const result = eval(expression);
+                screen.textContent = result;
+                storingInputs = [];
+                storingInputs.push(result);
+            }
+        });
+
+
+    </script>
+</body>
+</html>

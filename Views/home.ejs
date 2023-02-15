@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="css/home.css">
+    <link rel="stylesheet" href="css/nav.css">
+    <link rel="stylesheet" href="css/footer.css">
+</head>
+<body>
+    <%- include("partials/nav.ejs"); -%>
+
+    <main>
+        <div class="tools-container">
+            <div>
+                <a href="/search">
+                    <img src="https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/microsoft/209/left-pointing-magnifying-glass_1f50d.png">
+                </a><br><br>
+                <label >Search</label>
+            </div>
+            
+            <div>
+                <a href="/make-notes">
+                    <img src="https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/twitter/281/spiral-notepad_1f5d2-fe0f.png">
+                </a>
+                <br><br>
+                <label >Notes</label>
+            </div>
+
+            <div>
+                <a href="watch-videos">
+                    <img src="https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/samsung/265/play-button_25b6.png">
+                </a><br><br>
+                <label >Videos</label>
+            </div>
+            <div>
+                <a href="/calculator">
+                    <img src="https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/apple/271/abacus_1f9ee.png"> 
+                </a><br><br>
+                <label >Calculator</label>
+            </div>
+            <div>
+                <a href="/map">
+                <img src="https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/apple/271/globe-showing-americas_1f30e.png">
+                </a><br><br>
+                <label >Map</label>
+            </div>
+            <div>
+                <a href="/dictionary">
+                <img src="https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/microsoft/209/blue-book_1f4d8.png">
+                </a><br><br>
+                <label >Dictionary</label>
+            </div>
+
+        </div>
+    </main>
+    <%- include("partials/footer.ejs"); -%>
+
+</body>
+</html>

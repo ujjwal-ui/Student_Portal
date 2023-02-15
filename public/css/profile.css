@@ -1,0 +1,24 @@
+body{
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+}
+
+.profile-container{
+    width: 55%;
+    margin: auto;
+    padding: 20px;
+    background-color: #eee;
+    box-shadow: 0 2px 3px #ccc;
+}
+
+.img-container{
+    width: 25%;
+    margin: auto;
+}
+
+.img-container img{
+    width: 100%;
+    border-radius: 50%;
+}

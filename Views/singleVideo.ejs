@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="css/nav.css">
+    <link rel="stylesheet" href="css/singleVideo.css">
+    <link rel="stylesheet" href="css/footer.css">
+</head>
+<body>
+    <%- include("partials/nav.ejs") -%>
+
+    <div class="video-container">
+        <input type="hidden" name="video-id" value="<%= videoId %>">
+    </div>
+
+    <%- include("partials/footer.ejs") -%>
+    
+
+    <script>
+
+
+        function embedPlayer() {
+            const playerContainer = document.querySelector(".video-container");
+            const videoId = playerContainer.querySelector("input").value;
+
+                fetch(`https://www.googleapis.com/youtube/v3/videos?part=snippet,player&id=${videoId}&key=AIzaSyACpxGMKqP2zFqewXtbUkCf4W1CzKKe_jk`)
+                .then(res => res.json())
+                .then(output => {
+                    const iFrame =  document.createRange().createContextualFragment(output.items[0].player.embedHtml);
+                    playerContainer.appendChild(iFrame);
+                })
+                .catch(error => {
+                    console.log(error);
+                });
+        }   
+
+        embedPlayer(); 
+
+    </script>
+</body>
+</html>

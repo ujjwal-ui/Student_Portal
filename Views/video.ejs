@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="css/nav.css">
+    <link rel="stylesheet" href="css/footer.css">
+    <link rel="stylesheet" href="css/search.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous" />
+</head>
+<body>
+
+    <%- include("partials/nav.ejs") -%>
+
+    <div id="tool-heading">
+        <h4>VideoHub <i class="fa fa-play" aria-hidden="true"></i></h4>
+    </div>
+
+    <div class="backDrop"></div>
+
+    <div class="modal">
+        <p></p>
+        <button id="modal-button">ok</button>
+    </div>
+
+    <div class="search-container">
+        <div class="search-input-container">
+            <input type="text" name="search-query" id="search" placeholder="search here..">
+            <button><i class="fa fa-search" aria-hidden="true"></i></button>
+        </div>
+
+        <div class="spinner"></div>
+
+        <div id="search-results"></div>
+
+    </div>
+
+    <%- include("partials/footer.ejs") -%>
+
+    
+    <script>
+        const searchButton = document.querySelector(".search-input-container button");
+        const searchContainer = document.getElementById("search-results");
+        const backDp = document.querySelector(".backDrop");
+        const spnr = document.querySelector(".spinner");
+        const modal = document.querySelector(".modal");
+        const modalBtn = document.querySelector(".modal button");
+
+
+        // if data is present in the sessionStorage then display it.
+        if(sessionStorage.videoData) {
+            const data = JSON.parse(sessionStorage.getItem("videoData"));
+            queryDataFormat(data);
+        }
+
+
+        // button to remove the modal.
+        modalBtn.addEventListener("click", () => {
+            removingBackdrop()
+            modal.classList.remove("modal-style");
+        });
+
+
+        // modal which display's the error message.
+        function modalHandling(error) {
+            removingSpinner();
+            const modalParagraph = modal.querySelector("p");
+            modal.classList.add("modal-style");
+            modalParagraph.textContent = error.message;
+        }
+
+
+        // format's the response data and displays's to the screen.
+        function queryDataFormat(data) {
+            removingBackdrop();
+            removingSpinner();
+
+            data.forEach((element) => {
+                const dataContainer = document.createElement("div");
+                dataContainer.classList.add("video-result-box");
+                const link = document.createElement("a");
+                link.href = "/watch-videos/"+element.id.videoId;
+            
+                    dataContainer.innerHTML = `
+                            <img id="video-images" src=${element.snippet.thumbnails.medium.url} />  
+                            <h5>${element.snippet.title}</h5>
+                            <p>${element.snippet.channelTitle}<p/>      
+                    `;
+                link.appendChild(dataContainer)                
+                searchContainer.appendChild(link);
+                sessionStorage.setItem("videoData", JSON.stringify(data));
+            });
+        }
+    
+     
+        // get's the data related to the query.
+        function SearchTheQuery(query) {
+            fetch(`https://www.googleapis.com/youtube/v3/search?type=video&part=snippet&maxResults=15&q=${query}&key=AIzaSyACpxGMKqP2zFqewXtbUkCf4W1CzKKe_jk`)
+            .then(res => res.json())
+            .then(data => {
+                console.log(data);
+                queryDataFormat(data.items);
+            })
+            .catch(error => {
+                console.log(error);
+                modalHandling(error);
+            });
+        }
+
+
+        function addingBackdrop() {
+            backDp.classList.add("backdrop");
+        }
+
+        function addingSpinner() {
+            spnr.classList.add("loader");
+        }
+
+        function removingBackdrop() {
+            backDp.classList.remove("backdrop");
+        }
+
+        function removingSpinner() {
+            spnr.classList.remove("loader");
+        }
+
+
+        // triggers on the clicking the search button.
+        searchButton.addEventListener("click", () => {
+            const inputBox = document.querySelector(".search-input-container input");
+            if(sessionStorage.videoData) {
+                sessionStorage.removeItem("videoData");
+            }
+
+            addingBackdrop();
+            addingSpinner();
+            searchContainer.innerHTML = "";
+            SearchTheQuery(inputBox.value);
+        });
+
+
+
+    </script>
+
+</body>
+</html>
+
+
+<!-- // "https://www.googleapis.com/youtube/v3/videos?part=snippet,player&id="+element.id.videoId +"&key=AIzaSyACpxGMKqP2zFqewXtbUkCf4W1CzKKe_jk"; -->

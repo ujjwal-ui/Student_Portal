@@ -1,0 +1,18 @@
+body{
+    margin: 0;
+    padding: 0;
+    font-family: cursive;
+}
+
+.video-container{
+    width: 60%;
+    height: 400px;
+    background-color: #eee;
+    margin: auto;
+    box-shadow: 0 2px 3px 4px #ccc;
+}
+
+iframe {
+    width: 100%;
+    height: 100%;
+}

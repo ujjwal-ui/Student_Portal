@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="css/nav.css">
+    <link rel="stylesheet" href="css/footer.css">
+    <link rel="stylesheet" href="css/notes.css">
+</head>
+<body>
+    <%- include("partials/nav.ejs") -%>
+
+    <div class="notes-container">
+        <div class="notes">
+            <div class="notes-text-btn">
+                <textarea placeholder="write here..."></textarea><br>
+                <button type="button">Add</button>
+            </div>
+
+           <div class="note-box">
+              <% if(notes) { %>
+                <% notes.forEach((note, index) => { %>
+                    <% const displayText = note.text.slice(0, 25) %>
+                   
+                    <div class="note-style">
+                        <p><%= note.date %></p>
+                        <h5><%= displayText %></h5>
+                        <a id="open" href="/view-note/?id=<%= note._id %>">open</a>
+                        <button id="delete-note">delete</button>
+                        <input type="hidden" id="noteId" value="<%= note._id %>" >
+                    </div>
+              <% }) %>
+           <% } %>  
+
+           </div> 
+        </div>
+    </div>
+
+    <div class="modal">
+        <p></p>
+        <button id="modal-button">ok</button>
+    </div>
+
+    <div id="backdrop"></div>
+
+
+    <%- include("partials/footer.ejs") -%>
+
+
+    <script>
+
+        const textBox = document.querySelector(".notes-text-btn textarea");
+        const addButton = document.querySelector(".notes-text-btn button");
+        const noteBox = document.querySelector(".note-box");
+        const backdrop = document.getElementById("backdrop");
+        const modal = document.querySelector(".modal");
+
+
+        
+        //  modal ok button
+        const modalButton = modal.querySelector("button");
+        modalButton.addEventListener("click", (e) => {
+            modal.classList.remove("modal-style");
+            removeBackdrop();
+        });
+
+
+        // error handler
+        function errorHandler(error) {
+            addBackdrop();
+            modal.classList.add("modal-style");
+            const modalParagraph = modal.querySelector("p");
+            modalParagraph.textContent = error;
+        }
+
+
+        function addBackdrop() {
+            backdrop.classList.add("backdrop-style");
+        }
+
+        function removeBackdrop() {
+            backdrop.classList.remove("backdrop-style");
+        }
+
+
+        // delete confirmation modal.
+        function getDeleteModal() {
+            const container = document.createElement("div");
+                container.classList.add("delete-container");
+                container.innerHTML = `
+                    <p>Do you want to delete it.. ?</p>
+                    <button class="confirm-delete">delete</button>
+                    <button class="cancel-delete">cancel</button>
+                `;
+                return container;
+        }
+
+
+        // delete confimation handler.
+        function deleteConfirmationHandler() {
+            addBackdrop();
+            const modal = getDeleteModal();
+            backdrop.appendChild(modal);
+
+            return new Promise((resolve, reject) => {
+                const confirmDeleteBtn = modal.querySelector(".confirm-delete");
+                const cancelDeleteBtn = modal.querySelector(".cancel-delete"); 
+
+                confirmDeleteBtn.addEventListener("click", (e) => {
+                    resolve(modal);
+                });
+                cancelDeleteBtn.addEventListener("click", (e) => {
+                    reject(modal);
+                });
+            }) 
+        }
+
+
+
+        // deleting a note.
+        noteBox.addEventListener("click", (event) => {
+            event.preventDefault();
+
+            if(event.target.id === "delete-note") {
+               const noteId = event.target.parentElement.lastElementChild.value;
+               const elementToDelete = event.target.parentElement;
+
+                
+               deleteConfirmationHandler()
+               .then(modal => {
+                        fetch("/delete-note/?id="+noteId)
+                        .then(response => {
+                                 if(response.status === 400) {
+                                    return errorHandler(response.error);
+                                }
+                                return noteBox.removeChild(elementToDelete);
+                        })
+                        .then(deleted => {
+                                backdrop.removeChild(modal);
+                                removeBackdrop();
+                        })
+                        .catch(error => {
+                             console.log(error);
+                        });
+               })
+               .catch(modal => {
+                    backdrop.removeChild(modal);
+                    removeBackdrop();
+               });     
+
+            }
+
+            // opening a note.
+            if(event.target.id === "open") {
+               location.assign(event.target.href);
+            }
+        });
+
+
+
+        // get date.
+        function getTheDate() {
+            const date = new Date();
+            let h = date.getHours();
+            let m = date.getMinutes();
+            let s = date.getSeconds();
+            let status = "am"; 
+
+            if(h > 12) {
+                h = h - 12;
+                status = "pm";
+            }
+
+            if(m < 10) {
+                m = "0 " +m;
+            }
+
+            return `${h}: ${m} ${status}  ${date.toDateString()}`;           
+        }
+
+
+        // display a note .
+        function printTheNote(data) {
+            const noteContainer = document.createElement("div");
+            noteContainer.classList.add("note-style");
+
+            const displayText = data.text.slice(0, 25);
+
+            noteContainer.innerHTML = `
+                <p>${data.date}</p>
+                <h5>${displayText}</h5>
+                <a id="open" href="/view-note/?id=${data.docId}">view</a>
+                <button id="delete-note">delete</button>
+                <input type="hidden" id="noteId" value=${data.docId} >
+            `;
+            noteBox.appendChild(noteContainer);
+        }
+
+
+
+        // sending the note to server.
+        function configureNote(data) {
+            const currentDate = getTheDate();
+
+            fetch("http://localhost:3000/post-note", {
+                method: "POST",
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    text: data,
+                    date: currentDate
+                })
+            })
+            .then(response => {
+                response.json()
+                .then(data => {
+                    if(data.status === 500) {
+                        return errorHandler(data.error);
+                    }
+                   printTheNote(data);
+                })
+            })
+            .catch(error => {
+                errorHandler(error.message);
+            })
+        }
+
+
+        // adding a note.
+        addButton.addEventListener("click", (event) => {
+            event.preventDefault();
+            const textNoteValue = textBox.value;
+
+            if(!textNoteValue) {
+                return alert("field is empty...!");
+            }
+            // console.log(textNoteValue);
+            configureNote(textNoteValue);
+            textBox.value = "";
+        });
+
+
+
+    </script>
+</body>
+</html>

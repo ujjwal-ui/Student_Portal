@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="css/nav.css">
+    <link rel="stylesheet" href="css/footer.css">
+    <link rel="stylesheet" href="css/profile.css">
+</head>
+<body>
+    <%- include("partials/nav.ejs") -%>
+
+    <div class="profile-container">
+        <div class="img-container">
+            <img src="<%= user.img %>">
+        </div>
+        <div class="user-data">
+            <h5><%= user.name %></h5>
+        </div>
+    </div>
+    
+    <%- include("partials/footer.ejs") -%>
+</body>
+</html>

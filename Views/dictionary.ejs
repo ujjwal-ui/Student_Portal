@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="css/nav.css">
+    <link rel="stylesheet" href="css/footer.css">
+    <link rel="stylesheet" href="css/dictionary.css">
+</head>
+<body>
+    <%- include("partials/nav.ejs") -%>
+
+    <div class="outer-container">
+        <div class="dictionary">
+            <div class="search-box">
+                <input type="text" placeholder="search here">
+            </div>
+            <button>search</button>
+
+            <div class="result-box"></div>
+        </div>
+    </div>
+
+    <div class="spinner"></div>
+    <div class="backdrop"></div>
+
+
+    <%- include("partials/footer.ejs") -%>
+
+    <script>
+        
+      const dictionaryEndPoint =  `https://api.dictionaryapi.dev/api/v2/entries/en_US/ciao`;
+      const searchButton = document.querySelector(".dictionary button");
+      const searchBox = document.querySelector(".search-box input");
+      const resultBox = document.querySelector(".result-box");
+      
+
+
+
+      function addBackDrop() {
+        const backDrop = document.querySelector(".backdrop");
+        backDrop.classList.add("backdrop-style");
+      }
+
+
+      function removeBackDrop() {
+        const backDrop = document.querySelector(".backdrop");
+        backDrop.classList.remove("backdrop-style");
+      }
+
+      
+      function addSpinner() {
+          const spinner = document.querySelector(".spinner");
+          spinner.classList.add("loader");
+      }
+
+
+      function removeSpinner() {
+          const spinner = document.querySelector(".spinner");
+          spinner.classList.remove("loader");
+      }
+
+
+
+      function printOnScreen(data) {
+          const singleData = document.createElement("div");
+          singleData.classList.add("singleData-style");
+          singleData.innerHTML = `
+                <p>${data}</p>
+          `;
+          resultBox.appendChild(singleData);
+          removeBackDrop();
+          removeSpinner();
+      }
+
+
+      function addAudioButton(audioLink) {
+            const audio = new Audio(audioLink);
+            const button = document.createElement("button");
+            button.textContent = "play";
+            button.addEventListener("click", () => {
+                audio.play();
+            });
+        resultBox.appendChild(button);
+      }
+
+
+      function handleData(data) {
+          data.forEach((item, index) => {
+            
+            for(let key in item) {
+
+                if(key === "synonyms") {
+                   printOnScreen('synonyms = ' +item[key]);
+                }   
+
+                if(key !== "synonyms" && typeof item[key] !== "object" && key !== "audio") {
+                    printOnScreen(key +" = "+item[key]);
+                }
+
+                if(typeof item[key] === 'object' && key !== "synonyms") {
+                     handleData(item[key]);    
+                }
+
+                if(key === "audio") {
+                    addAudioButton(item[key]);
+                }
+
+            } 
+          });
+      }
+
+      searchButton.addEventListener("click", (e) => {
+          resultBox.innerHTML = "";
+          addBackDrop();
+          addSpinner();
+          const query = searchBox.value;
+          console.log(query);
+
+          fetch(`https://api.dictionaryapi.dev/api/v2/entries/en_US/${query}`)
+          .then(response => {
+              return response.json();
+          })
+          .then(output => {
+              console.log(output);
+                handleData(output);
+          })
+      });  
+
+    </script>
+</body>
+</html>

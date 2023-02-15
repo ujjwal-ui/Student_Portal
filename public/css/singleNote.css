@@ -1,0 +1,17 @@
+.single-note-container{
+    width: 100vw;
+    height: 80vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.single-note{
+    width: 30%;
+    height: 20%;
+    background-color: blanchedalmond;
+    color: black;
+    font-weight: bold;
+    box-shadow: 2 px 3px 4px #ccc;
+    padding: 8px;
+}

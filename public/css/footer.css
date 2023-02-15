@@ -1,0 +1,18 @@
+
+body{
+    margin: 0;
+    padding: 0;
+    font-family: cursive;
+}
+
+footer{
+    width: 100%;
+    text-align: center;
+    position: fixed;
+    background-color: black;
+    color: pink;
+    font-size: 12px;
+    position: fixed;
+    padding: 5px 0;
+    bottom: 0;
+}

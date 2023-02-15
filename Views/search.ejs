@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="css/nav.css">
+    <link rel="stylesheet" href="css/footer.css">
+    <link rel="stylesheet" href="css/search.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous" />
+</head>
+<body>
+    <%- include("partials/nav.ejs") -%>
+
+    <div class="backDrop"></div>
+
+    <div id="tool-heading">
+        <h4>Search Engine <i class="fa fa-search" aria-hidden="true"></i></h4>
+    </div>
+
+        <div class="modal">
+            <p></p>
+            <button id="modal-button">ok</button>
+        </div>
+
+    <div class="search-container">
+        <div class="search-input-container">
+            <input type="text" name="search-query" id="search" placeholder="search here..">
+            <button><i class="fa fa-search" aria-hidden="true"></i></button>
+        </div>
+
+        <div class="spinner"></div>
+
+        <div id="search-results"></div>
+
+    </div>
+
+    <%- include("partials/footer.ejs") -%>
+
+
+
+    <script>
+        const searchContainer = document.getElementById("search-results");
+        const searchButton = document.querySelector(".search-input-container button");
+        const backDp = document.querySelector(".backDrop");
+        const spnr = document.querySelector(".spinner");
+        const modal = document.querySelector(".modal");
+        const modalBtn = document.querySelector(".modal button");
+
+
+
+
+        // if data is present in the sessionStorage then display it.
+        if(sessionStorage.search) {
+            const data = JSON.parse(sessionStorage.getItem("search"));
+            formatData(data);
+        }
+
+
+         // button to remove the modal.
+        modalBtn.addEventListener("click", () => {
+            removingBackdrop()
+            modal.classList.remove("modal-style");
+        });
+
+
+         // modal which display's the error message.
+        function errorHandler(error) {
+            removingSpinner();
+            const modalParagraph = modal.querySelector("p");
+            modal.classList.add("modal-style");
+            modalParagraph.textContent = error.message;
+        }
+
+
+        function addingBackdrop() {
+            backDp.classList.add("backdrop");
+        }
+
+        function addingSpinner() {
+            spnr.classList.add("loader");
+        }
+
+        function removingBackdrop() {
+            backDp.classList.remove("backdrop");
+        }
+
+        function removingSpinner() {
+            spnr.classList.remove("loader");
+        }
+
+
+        // formatting and printing the response data.
+        function formatData(data) {
+            removingBackdrop();
+            removingSpinner();
+
+            data.forEach((element) => {
+                const dataContainer = document.createElement("div");
+                dataContainer.classList.add("search-result-box");
+                dataContainer.innerHTML = `
+                    <p>${element.title}<p/>
+                    <a href=${element.url}>view<a/>
+                `;
+                searchContainer.appendChild(dataContainer);
+                sessionStorage.setItem("search", JSON.stringify(data));
+          });
+        }
+
+
+        // Searching the query.
+        function SearchTheQuery(query) {
+            fetch(`http://api.serpstack.com/search?access_key=ef6564a5a81c50dfd017217948571fa0&query=${query}`)
+            .then(res => res.json())
+            .then(output => {
+                if(output) {
+                    formatData(output.organic_results);
+                }
+            })
+            .catch(error => {
+                console.log(error);
+                errorHandler(error);
+            });
+        }
+
+        // Handling the search button event.
+        searchButton.addEventListener("click", () => {
+            const inputBox = document.querySelector(".search-input-container input");
+
+            if(sessionStorage.search) {
+                sessionStorage.removeItem("search");
+            }
+
+            addingBackdrop();
+            addingSpinner();
+            searchContainer.innerHTML = "";
+            SearchTheQuery(inputBox.value);
+            inputBox.value = "";
+
+        });
+
+    </script>
+
+</body>
+</html>

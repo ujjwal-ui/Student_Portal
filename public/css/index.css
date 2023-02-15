@@ -1,0 +1,87 @@
+body{
+    margin: 0;
+    padding: 0;
+    color: white;
+    box-sizing: border-box;
+    font-family: cursive;
+    background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+    background-size: 400% 400%;
+    animation: gradient 15s ease infinite;
+}
+
+.index-container{
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-flow: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#oauth-buttons{
+    width: 40%;
+    height: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-flow: column;
+    margin: 30px;
+    background-color: #eee;
+    box-shadow: 0 2px 3px 4px #ccc;
+}
+
+#oauth-buttons #google-btn{
+    text-decoration: none;
+    width: 120px;
+    text-align: center;
+    background-color: red;
+    color: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px black;
+    padding: 10px;
+    margin: 12px;
+}
+
+#oauth-buttons #facebook-btn{
+    text-decoration: none;
+    width: 120px;
+    text-align: center;
+    background-color: blue;
+    color: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px black;
+    padding: 10px;
+    margin: 12px;
+}
+
+
+#oauth-buttons #google-btn i{
+    margin-right: 9px;
+}
+
+#oauth-buttons #facebook-btn i{
+    margin-right: 9px;
+}
+
+#oauth-buttons #facebook-btn:hover{
+    background-color: black;
+    color: white;
+}
+
+#oauth-buttons #google-btn:hover{
+    background-color: black;
+    color: white;
+}
+
+
+@keyframes gradient {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
